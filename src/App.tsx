@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import SearchForm from "./components/SearchForm";
 import ItemsTable from "./components/ItemList";
 import { IItem } from "./model/item.interface";

@@ -6,7 +6,6 @@ import {
   IconButton,
   Typography,
   ListItem,
-  ListItemText,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";

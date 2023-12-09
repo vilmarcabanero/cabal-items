@@ -31,7 +31,7 @@ function ItemsTable({ items }: Props) {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const handleChangePage = (
-    event: React.MouseEvent<HTMLButtonElement> | null,
+  _event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number,
   ) => {
     setPage(newPage);
