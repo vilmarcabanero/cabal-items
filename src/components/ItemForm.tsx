@@ -7,6 +7,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  CircularProgress,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -19,6 +20,7 @@ const ItemFormModal: React.FC = () => {
   const [price, setPrice] = useState("");
   const [details, setDetails] = useState("");
   const [date, setDate] = useState<Date | null>(new Date());
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleOpen = () => {
     setOpen(true);
@@ -34,6 +36,7 @@ const ItemFormModal: React.FC = () => {
     const itemData = { name, price: numericPrice, date, details };
 
     try {
+      setIsLoading(true);
       const response = await fetch(`${import.meta.env.VITE_API_URL}/item`, {
         // Replace with your actual API endpoint
         method: "POST",
@@ -53,6 +56,8 @@ const ItemFormModal: React.FC = () => {
       } else {
         console.log("Failed to add item:", await response.text());
       }
+
+      setIsLoading(false)
     } catch (error) {
       console.error("Error submitting form:", error);
     }
@@ -118,8 +123,8 @@ const ItemFormModal: React.FC = () => {
         </DialogContent>
         <DialogActions sx={{ m: 2 }}>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit} variant="contained">
-            Submit
+          <Button onClick={handleSubmit} variant="contained" sx={{ width: '87.3px' }}>
+            { isLoading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Submit' }
           </Button>
         </DialogActions>
       </Dialog>
