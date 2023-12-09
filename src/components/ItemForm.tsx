@@ -29,8 +29,9 @@ const ItemFormModal: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+    const numericPrice = parseInt(price.replace(/,/g, ''), 10);
     // Prepare the data to be sent
-    const itemData = { name, price, date, details };
+    const itemData = { name, price: numericPrice, date, details };
 
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/item`, {
@@ -45,6 +46,10 @@ const ItemFormModal: React.FC = () => {
       if (response.status === 201) {
         console.log("Item added successfully");
         handleClose(); // Close the modal on successful addition
+        setName('');
+        setPrice('');
+        setDetails('');
+        setDate(new Date());
       } else {
         console.log("Failed to add item:", await response.text());
       }
