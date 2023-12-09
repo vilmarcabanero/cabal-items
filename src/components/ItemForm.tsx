@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import {
   TextField,
@@ -10,6 +11,7 @@ import {
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers";
+import { getColorForAmount } from "../utils/color";
 
 const ItemFormModal: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -51,6 +53,22 @@ const ItemFormModal: React.FC = () => {
     }
   };
 
+  const handlePriceInputChange = (event: any) => {
+    // Remove non-numeric characters except commas
+    const value = event.target.value.replace(/[^0-9,]/g, '');
+
+    // Convert to number and format with commas
+    const numericValue = parseInt(value.replace(/,/g, ''), 10);
+    if (!isNaN(numericValue)) {
+      setPrice(numericValue.toLocaleString());
+    } else {
+      setPrice('');
+    }
+  }
+
+  // Determine the color
+  const color = getColorForAmount(parseInt(price.replace(/,/g, ''), 10) || 0);
+
   return (
     <div>
       <Button variant="outlined" onClick={handleOpen}>
@@ -70,11 +88,11 @@ const ItemFormModal: React.FC = () => {
               />
               <TextField
                 label="Price"
-                type="number"
+                type="text"
                 value={price}
-                onChange={(event) => setPrice(event.target.value)}
+                onChange={handlePriceInputChange}
                 fullWidth
-                sx={{ mt: 2 }}
+                sx={{ mt: 2, input: { color: color } }}
               />
               <TextField
                 label="Details"
