@@ -15,11 +15,7 @@ function App() {
       const { data } = await axios.get(
         `${import.meta.env.VITE_API_URL}/item/recent`,
       ); // Replace with your actual API endpoint
-
-      const items = data
-        .map((search: { results: any }) => search.results)
-        .flat(); // Flatten the results into a single array
-      setSearchResults(items);
+      setSearchResults(data);
     } catch (error) {
       console.error("Error fetching recent searches:", error);
     }

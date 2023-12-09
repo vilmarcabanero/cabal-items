@@ -1,11 +1,19 @@
-import React, { useState } from "react";
-import { InputBase, Paper, IconButton } from "@mui/material";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useEffect, useState } from "react";
+import {
+  InputBase,
+  Paper,
+  IconButton,
+  Typography,
+  ListItem,
+  ListItemText,
+} from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios"; // Import Axios
+import { IItem } from "../model/item.interface";
 
 interface SearchComponentProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSearchResults: (items: any[]) => void; // To handle the search results
   handleRecentSearches: () => void;
 }
@@ -15,6 +23,7 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
   handleRecentSearches,
 }) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [suggestions, setSuggestions] = useState<any>([]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -42,32 +51,80 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
     }
   };
 
+  const handleSuggestionClick = async (item: IItem) => {
+    try {
+      // Assuming you want to search using the clicked item's name
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/item/search`,
+        { params: { q: item.name } },
+      );
+      console.log(response.data);
+      onSearchResults(response.data);
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+      onSearchResults([]);
+    }
+  };
+
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (searchTerm) {
+        try {
+          const response = await axios.get(
+            `${import.meta.env.VITE_API_URL}/item/autosuggest`,
+            {
+              params: { q: searchTerm },
+            },
+          );
+          setSuggestions(response.data);
+        } catch (error) {
+          console.error("Error fetching suggestions:", error);
+        }
+      } else {
+        setSuggestions([]); // Clear suggestions when input is empty
+      }
+    };
+
+    const timerId = setTimeout(() => {
+      fetchSuggestions();
+    }, 300); // Add some debounce
+
+    return () => clearTimeout(timerId);
+  }, [searchTerm]);
+
   return (
-    <Paper
-      component="form"
-      sx={{ p: "2px 4px", display: "flex", alignItems: "center", width: 400 }}
-      onSubmit={handleSubmit}
-    >
-      <IconButton sx={{ p: "10px" }} aria-label="search" type="submit">
-        <SearchIcon />
-      </IconButton>
-      <InputBase
-        sx={{ ml: 1, flex: 1 }}
-        placeholder="Search items..."
-        inputProps={{ "aria-label": "search items" }}
-        value={searchTerm}
-        onChange={handleSearchChange}
-      />
-      {searchTerm && (
-        <IconButton
-          sx={{ p: "10px" }}
-          aria-label="clear"
-          onClick={handleClearSearch}
-        >
-          <CloseIcon />
+    <div>
+      <Paper
+        component="form"
+        sx={{ p: "2px 4px", display: "flex", alignItems: "center", width: 400 }}
+        onSubmit={handleSubmit}
+      >
+        <IconButton sx={{ p: "10px" }} aria-label="search" type="submit">
+          <SearchIcon />
         </IconButton>
-      )}
-    </Paper>
+        <InputBase
+          sx={{ ml: 1, flex: 1 }}
+          placeholder="Search items..."
+          inputProps={{ "aria-label": "search items" }}
+          value={searchTerm}
+          onChange={handleSearchChange}
+        />
+        {searchTerm && (
+          <IconButton
+            sx={{ p: "10px" }}
+            aria-label="clear"
+            onClick={handleClearSearch}
+          >
+            <CloseIcon />
+          </IconButton>
+        )}
+      </Paper>
+      {suggestions.map((item: IItem) => (
+        <ListItem key={item._id} onClick={() => handleSuggestionClick(item)}>
+          <ListItemText primary={item.name} />
+        </ListItem>
+      ))}
+    </div>
   );
 };
 
