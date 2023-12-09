@@ -1,30 +1,28 @@
-import React from 'react';
+import React from "react";
 
 interface PriceProps {
-  amount: string;
+  amount: number; // Changed to number
 }
 
 const Price: React.FC<PriceProps> = ({ amount }) => {
   // Function to determine the amount range
-  const getColorForAmount = (amount: string) => {
-    // Remove commas for accurate conversion
-    const numericValue = parseFloat(amount.replace(/,/g, ''));
+  const getColorForAmount = (amount: number) => {
     // Determine the color based on the value range
-    if (numericValue >= 1e10) {
+    if (amount >= 1e10) {
       // Tens of billions
-      return '#00FFFF'; // Replace with your chosen color
-    } else if (numericValue >= 1e9) {
+      return "#00FFFF"; // Cyan color
+    } else if (amount >= 1e9) {
       // Billions
-      return '#000000';
-    }
-    else if (numericValue >= 1e8) {
-      // Millions
-      return '#b3653e';
-    } else if (numericValue >= 1e7) {
+      return "#000000"; // Black color
+    } else if (amount >= 1e8) {
+      // Hundreds of millions
+      return "#b3653e"; // Brown color
+    } else if (amount >= 1e7) {
       // Tens of millions
-      return '#0B6623'; // Replace with your chosen color
+      return "#0B6623"; // Forest green color
     }
-
+    // Default color if none of the conditions are met
+    return "inherit";
   };
 
   // Get the color based on the amount
@@ -32,7 +30,7 @@ const Price: React.FC<PriceProps> = ({ amount }) => {
 
   return (
     <div style={{ color: color }}>
-      {amount}
+      {amount.toLocaleString()} {/* Format number with commas */}
     </div>
   );
 };
